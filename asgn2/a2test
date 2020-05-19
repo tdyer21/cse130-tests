@@ -23,6 +23,7 @@ done
 printf "%s\n" ${VERBOSE}
 
 #Define colors for printing to console
+#looks like some sort of paint factory accident...
 NORM="$(printf '\033[0m')"
 RED="$(printf '\033[0;1;31m')"
 GREEN="$(printf '\033[0;1;32m')"
