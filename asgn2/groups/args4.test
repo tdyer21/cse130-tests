@@ -1,0 +1,19 @@
+#Tests if server checks for logname argument when -l is specified
+
+httpserver 8080 -l 2>err
+RET=$?
+sleep 0.5
+
+printf "Message to stderr and exit failure\n" >args.test.out
+mv args.test.out test/groups
+
+#If file is non empty
+if [ -s err ] && [ $RET -ne 0 ]; then
+	printf "Message to stderr and exit failure\n"
+else 
+	printf "Tests if server checks for logname argument when -l is specified\nstderr is empty or return value is success\n"
+fi
+
+rm err
+
+pkill httpserver

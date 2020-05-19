@@ -1,0 +1,13 @@
+httpserver 8080 &
+sleep 0.5
+
+rm -f hi
+size=$(stat -c%s DESIGN.pdf)
+printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\nHTTP/1.1 200 OK\r\nContent-Length: $size\r\n\r\n" > created.test.out
+mv created.test.out test/groups/created.test.out
+curl -is -T DESIGN.pdf localhost:8080/hi
+diff DESIGN.pdf hi
+curl -is -I localhost:8080/hi
+rm -f hi
+
+pkill httpserver

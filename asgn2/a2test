@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# This test script was based of of Aviv Brook's 
+#test file for as1. It has been modified to be more in line 
+#with TA Allen's style of testing. Thanks to both!
+
+usage() {
+    echo "Usage: $0 [-v (verbose)]" 1>&2
+    exit 1
+}
+
+VERBOSE=""
+
+while getopts ":v" opt; do
+    case ${opt} in
+        v   ) VERBOSE="-v"
+            ;;
+        \?  ) usage
+            ;;
+    esac
+done
+
+printf "%s\n" ${VERBOSE}
+
+#Define colors for printing to console
+NORM="$(printf '\033[0m')"
+RED="$(printf '\033[0;1;31m')"
+GREEN="$(printf '\033[0;1;32m')"
+BLUE="$(printf '\033[0;1;34m')"
+PURP="$(printf '\033[0;1;35m')"
+
+#Constants for folders and such
+ASGNNUM=2
+TESTDIR=test/
+GROUPDIR=groups/
+TESTCLASSES=( bad-request forbidden not-found created args health log )
+
+#Direct all stderr to null, might be a bad idea
+#This was to avoid all of the terminated messages
+#from pkilling httpserver
+exec 2>/dev/null
+
+
+# cd into asgn2 dir
+cd ..
+
+#make
+make spotless
+make
+
+#Check if make is successful
+if [ $? -eq 0 ]; then
+    printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
+else 
+    #Exit if make fails
+    printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
+    exit 1
+fi
+
+#Make random files of size 
+# 256 bytes -> small
+# 1 KiB -> medium
+# 1MiB -> large
+# 99MiB -> huge
+
+
+printf "\n${PURP}>Generating random files...\n$NORM"
+dd if=/dev/urandom of=randsmall count=2 bs=128
+dd if=/dev/urandom of=randmed count=2 bs=512
+dd if=/dev/urandom of=randlarge count=1024 bs=1024
+#dd if=/dev/urandom of=randhuge count=99 bs=1048576
+
+
+#Kill any httpservers just in case any are still active
+pkill httpserver
+
+printf "\n${PURP}========> Running tests for asgn$ASGNNUM <========\n$NORM"
+
+#This keeps track of if the program fails at least 1 test
+FAIL=0
+
+#For each test class
+for class in ${TESTCLASSES[@]}; do
+    #For each test in the test class
+    for test in $TESTDIR$GROUPDIR$class*.test; do
+
+        #Get the name of the test -> <testclass><testnum>
+        name=${test%.test}
+
+        printf "${BLUE}-> Running test:$NORM ${name##*/} ... "
+        #Make test executable
+        chmod +x $test
+        #Put output of test into out
+        $test > out
+
+        #Compare it to <testclass>.test.out
+        #Each test must populate this file before it exits
+        if $test ${VERBOSE}; then
+            printf "${GREEN}SUCCESS!$NORM\n"
+        else
+            #In failure case, print output and expected output
+            printf "${RED}FAILURE!$NORM\n"
+			printf "${RED}Output of failed test...$NORM\n"
+			cat out
+			printf "${PURP}======================\n${GREEN}Expected:$NORM\n"
+			cat $TESTDIR$GROUPDIR$class.test.out
+			printf "${PURP}======================$NORM\n"
+            FAIL=1
+        fi
+        #Remove out file
+        rm out
+
+   done
+done
+
+#Remove random files
+rm randsmall
+rm randmed
+rm randlarge
+
+#Notify user if they failed at least 1 test
+if [ $FAIL == 1 ]; then
+    printf "\n${RED}        ONE OR MORE TESTS HAVE FAILED$NORM\n\n"
+    printf "${PURP}========> End test script for asgn$ASGNNUM <=========$NORM\n\n"
+    exit 1
+fi
+
+printf "${PURP}========> End test script for asgn$ASGNNUM <=========$NORM\n\n"
+exit 0

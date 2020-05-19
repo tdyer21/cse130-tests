@@ -1,0 +1,62 @@
+#tests putting binary files
+
+httpserver 8080 &
+sleep 0.5
+
+printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >createdtext
+
+FAIL=0
+
+printf "Binary PUT tests pass\n" >created.test.out
+mv created.test.out test/groups
+
+curl -si localhost:8080/small -T randsmall >t1
+curl -si localhost:8080/med -T randmed >t2
+curl -si localhost:8080/large -T randlarge >t3
+
+if ! diff t1 createdtext ; then
+    printf "Created response incorrect for small binary files\n" 
+    FAIL=1
+fi
+
+if ! diff t2 createdtext ; then
+    printf "Created response incorrect for medium binary files\n" 
+    FAIL=1
+fi
+
+if ! diff t3 createdtext ; then
+    printf "Created response incorrect for large binary files\n" 
+    FAIL=1
+fi
+
+if ! diff small randsmall ; then
+    printf "Small binary PUT file differs from original\n" 
+    FAIL=1
+fi
+
+if ! diff med randmed ; then
+    printf "Medium binary PUT file differs from original\n" 
+    FAIL=1
+fi 
+
+if ! diff large randlarge ; then
+    printf "Large binary PUT file differs from original\n" 
+    FAIL=1
+fi
+
+if [ $FAIL -eq 0 ] ; then
+    printf "Binary PUT tests pass\n"
+fi
+
+
+rm small
+rm med
+rm large
+rm huge
+rm t1
+rm t2
+rm t3
+rm createdtext
+
+
+pkill httpserver

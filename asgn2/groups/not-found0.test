@@ -1,0 +1,6 @@
+httpserver 8080 &
+sleep 0.5
+
+curl -is localhost:8080/no-such-file
+
+pkill httpserver

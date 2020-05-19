@@ -1,0 +1,19 @@
+#Tests if program checks for port argument and returns EXIT_FAILURE
+
+httpserver 2>err
+RET=$?
+sleep 0.5
+
+printf "Message to stderr and exit failure\n" >args.test.out
+mv args.test.out test/groups
+
+#If file is non empty
+if [ -s err ] && [ $RET -ne 0 ]; then
+	printf "Message to stderr and exit failure\n"
+else 
+	printf "Tests if program checks for port argument and returns EXIT_FAILURE\nstderr is empty or return value is success\n"
+fi
+
+rm err
+
+pkill httpserver

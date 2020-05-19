@@ -1,0 +1,26 @@
+#Tests all permutations of arguments with port in the middle, all permutations are valid
+
+httpserver -N 5 8080 -l logname & 2>>err
+sleep 0.2
+pkill httpserver
+
+httpserver -l logname 8080 -N 5 & 2>>err
+sleep 0.2
+pkill httpserver
+
+
+printf "Program accepts legal arguments in any order\n" >args.test.out
+mv args.test.out test/groups
+
+#If file is non empty
+if [ -s err ]; then
+	printf "Tests all permutations of arguments with port in the middle, all permutations are valid\nProgram does not accept legal arguments in any order, stderr non-empty\n"
+	
+else 
+	printf "Program accepts legal arguments in any order\n"
+fi
+
+rm err
+rm logname
+
+pkill httpserver

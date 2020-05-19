@@ -1,0 +1,17 @@
+httpserver 8080 -l log &
+sleep 0.5
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\n0\n0HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\nHTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\nHTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\n2\n3" >health.test.out
+mv health.test.out test/groups
+
+touch empty
+
+curl -si localhost:8080/healthcheck
+curl -si localhost:8080/healthcheck -I
+curl -si localhost:8080/healthcheck -T empty
+curl -si localhost:8080/healthcheck
+
+rm empty
+rm log
+
+pkill httpserver

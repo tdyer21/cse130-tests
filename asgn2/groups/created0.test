@@ -1,0 +1,19 @@
+#tests put on small text file
+
+httpserver 8080 &
+sleep 0.5
+
+touch smalltext
+printf "This is a small textfile\n" >smalltext
+
+printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >created.test.out
+cat smalltext >>created.test.out
+mv created.test.out test/groups
+
+curl -si localhost:8080/small -T smalltext
+cat small
+
+rm smalltext
+rm small
+
+pkill httpserver
