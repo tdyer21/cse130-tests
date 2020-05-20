@@ -1,0 +1,9 @@
+#Test for negative content length
+
+httpserver 8080 &
+sleep 0.1
+
+printf "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n" >expected 
+curl -si -H "Content-Length: -1" localhost:8080 >output
+
+pkill httpserver

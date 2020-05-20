@@ -1,0 +1,11 @@
+#Tests for incorrect request method
+
+httpserver 8080 &
+sleep 0.1
+
+printf "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n" >expected 
+curl -si -X H localhost:8080 >output
+
+pkill httpserver
+
+exit $(cmp -s expected output)

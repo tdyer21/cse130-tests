@@ -1,4 +1,0 @@
-httpserver 8080 &
-sleep 0.5
-curl -si -H "Content-Length: -1" localhost:8080
-pkill httpserver

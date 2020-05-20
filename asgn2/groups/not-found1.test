@@ -1,6 +1,0 @@
-httpserver 8080 &
-sleep 0.5
-
-curl -si localhost:8080/ABCDEFarqdeXYZxyzf012345-ab
-
-pkill httpserver

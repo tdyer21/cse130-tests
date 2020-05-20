@@ -1,0 +1,6 @@
+
+printf "Expected\n" >expected
+printf "Observed\n" >output
+
+exit $(cmp -s expected output)
+

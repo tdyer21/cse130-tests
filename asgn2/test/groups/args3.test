@@ -1,11 +1,12 @@
 #Tests if server checks for numeric numthreads argument
+#
+#
 
 httpserver 8080 -N abc 2>err
 RET=$?
-sleep 0.5
+sleep 0.1
 
-printf "Message to stderr and exit failure\n" >args.test.out
-mv args.test.out test/groups
+printf "Message to stderr and exit failure\n" >expected
 
 #If file is non empty
 if [ -s err ] && [ $RET -ne 0 ]; then

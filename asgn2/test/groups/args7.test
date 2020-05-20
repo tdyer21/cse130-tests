@@ -1,24 +1,25 @@
 #Tests all permutations of arguments ending with port, all permutations are valid
+#
+#
 
 httpserver -N 5 8080 & 2>>err
-sleep 0.2
+sleep 0.1
 pkill httpserver
 
 httpserver -l logname 8080 & 2>>err
-sleep 0.2
+sleep 0.1
 pkill httpserver
 
 httpserver -N 5 -l logname 8080 & 2>>err
-sleep 0.2
+sleep 0.1
 pkill httpserver
 
 httpserver -l logname -N 5 8080 & 2>>err
-sleep 0.2
+sleep 0.1
 pkill httpserver
 
 
-printf "Program accepts legal arguments in any order\n" >args.test.out
-mv args.test.out test/groups
+printf "Program accepts legal arguments in any order\n" >expected
 
 #If file is non empty
 if [ -s err ]; then

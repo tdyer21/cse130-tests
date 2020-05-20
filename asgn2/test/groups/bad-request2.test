@@ -1,0 +1,12 @@
+#Tests for logn file name
+
+httpserver 8080 &
+sleep 0.1
+
+printf "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n" >expected 
+curl -si localhost:8080/ABCDEFabcdef012345XYZxyz-mmm >output
+
+
+pkill httpserver
+
+exit $(cmp -s expected output)

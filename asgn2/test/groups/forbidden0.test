@@ -1,0 +1,19 @@
+#Tests all request types on a no permission file
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+for i in {1..3}; do
+    printf "HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n" >>expected
+done
+
+touch hi
+chmod -rwx hi
+curl -si localhost:8080/hi 
+curl -si localhost:8080/hi -I 
+curl -si localhost:8080/hi -T httpserver 
+rm -f hi
+
+pkill httpserver

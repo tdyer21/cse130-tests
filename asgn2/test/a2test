@@ -4,23 +4,6 @@
 #test file for as1. It has been modified to be more in line 
 #with TA Allen's style of testing. Thanks to both!
 
-usage() {
-    echo "Usage: $0 [-v (verbose)]" 1>&2
-    exit 1
-}
-
-VERBOSE=""
-
-while getopts ":v" opt; do
-    case ${opt} in
-        v   ) VERBOSE="-v"
-            ;;
-        \?  ) usage
-            ;;
-    esac
-done
-
-printf "%s\n" ${VERBOSE}
 
 #Define colors for printing to console
 #looks like some sort of paint factory explosion...
@@ -34,7 +17,8 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=2
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=( bad-request forbidden not-found created args health log )
+TESTCLASSES=( bad-request forbidden not-found ) #created args health log )
+FAILLOG=${TESTDIR}faillog
 
 #Direct all stderr to null, might be a bad idea
 #This was to avoid all of the terminated messages
@@ -46,17 +30,17 @@ exec 2>/dev/null
 cd ..
 
 #make
-make spotless
-make
+#make spotless
+#make
 
 #Check if make is successful
-if [ $? -eq 0 ]; then
-    printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
-else 
+#if [ $? -eq 0 ]; then
+    #printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
+#else 
     #Exit if make fails
-    printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
-    exit 1
-fi
+    #printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
+    #exit 1
+#fi
 
 #Make random files of size 
 # 256 bytes -> small
@@ -74,42 +58,48 @@ dd if=/dev/urandom of=randlarge count=1024 bs=1024
 
 #Kill any httpservers just in case any are still active
 pkill httpserver
+#Remove any prior faillog
+rm $FAILLOG
 
 printf "\n${PURP}========> Running tests for asgn$ASGNNUM <========\n$NORM"
 
 #This keeps track of if the program fails at least 1 test
 FAIL=0
 
+
 #For each test class
 for class in ${TESTCLASSES[@]}; do
     #For each test in the test class
     for test in $TESTDIR$GROUPDIR$class*.test; do
 
-        #Get the name of the test -> <testclass><testnum>
         name=${test%.test}
 
         printf "${BLUE}-> Running test:$NORM ${name##*/} ... "
         #Make test executable
         chmod +x $test
-        #Put output of test into out
-        $test > out
 
-        #Compare it to <testclass>.test.out
-        #Each test must populate this file before it exits
-        if $test ${VERBOSE}; then
+        $test >output
+
+        #see if test failes or not
+        if cmp -s expected output; then
             printf "${GREEN}SUCCESS!$NORM\n"
         else
             #In failure case, print output and expected output
             printf "${RED}FAILURE!$NORM\n"
-			printf "${RED}Output of failed test...$NORM\n"
-			cat out
+			printf "${RED}Output of failed test:$NORM\n"
+			cat output
 			printf "${PURP}======================\n${GREEN}Expected:$NORM\n"
-			cat $TESTDIR$GROUPDIR$class.test.out
+			cat expected
 			printf "${PURP}======================$NORM\n"
             FAIL=1
+
+            printf "%s notes:\n" ${test} >>$FAILLOG
+            head -3 ${test} >>$FAILLOG
+            printf "========\n" >>$FAILLOG
         fi
         #Remove out file
-        rm out
+        rm output   2>/dev/null
+        rm expected 2>/dev/null
 
    done
 done
