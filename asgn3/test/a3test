@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# This test script was based of of Aviv Brook's 
+#test file for as1. It has been modified to be more in line 
+#with TA Allen's style of testing. Thanks to both!
+
+
+#Define colors for printing to console
+#looks like some sort of paint factory explosion...
+NORM="$(printf '\033[0m')"
+RED="$(printf '\033[0;1;31m')"
+GREEN="$(printf '\033[0;1;32m')"
+BLUE="$(printf '\033[0;1;34m')"
+PURP="$(printf '\033[0;1;35m')"
+
+#Constants for folders and such
+ASGNNUM=3
+TESTDIR=test/
+GROUPDIR=groups/
+TESTCLASSES=(  )
+
+
+#Direct all stderr to null, might be a bad idea
+#This was to avoid all of the terminated messages
+#from pkilling httpserver
+exec 2>/dev/null
+
+#make sure hex is executable
+chmod +x hex
+
+# cd into asgn2 dir
+cd ..
+
+make spotless
+make
+
+#Check if make is successful
+if [ $? -eq 0 ]; then
+    printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
+else 
+    #Exit if make fails
+    printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
+    exit 1
+fi
+
+#Make random files of size of approximately
+# 256 bytes -> small
+# 1 KiB -> medium
+# 1MiB -> large
+
+#Size of random files is random
+SMALL=$[ ( $RANDOM % 51 ) + 100]
+MED=$[ ( $RANDOM % 201 ) + 400]
+LARGE=$[ ( $RANDOM % 501 ) + 1000]
+
+printf "\n${PURP}>Generating random files...\n$NORM"
+dd if=/dev/urandom of=randsmall count=2 bs=$SMALL
+dd if=/dev/urandom of=randmed count=2 bs=$MED
+dd if=/dev/urandom of=randlarge count=1024 bs=$LARGE
+
+ls -la rand*
+
+#Kill any httpservers just in case any are still active
+pkill httpserver
+#Remove any prior fail logs
+rm ${TESTDIR}*.fail
+
+printf "\n${PURP}========> Running tests for asgn$ASGNNUM <========\n$NORM"
+
+#This keeps track of if the program fails at least 1 test
+FAIL=0
+
+
+#For each test class
+for class in ${TESTCLASSES[@]}; do
+    #For each test in the test class
+    for test in $TESTDIR$GROUPDIR$class*.test; do
+
+        # remove .test
+        NOEXT=${test%.test}
+        NAME=${NOEXT##*/}
+
+        # ##*/ removes the path prefix, leaving just the test name
+        printf "${BLUE}-> Running test:$NORM ${NAME} ... "
+        #Make test executable
+        chmod +x $test
+
+        $test >output
+
+        #see if test failes or not
+        if cmp -s expected output; then
+            printf "${GREEN}SUCCESS!$NORM\n"
+        else
+            #In failure case, print output and expected output
+            printf "${RED}FAILURE!$NORM\n"
+			printf "${RED}Output of failed test:$NORM\n"
+			cat output
+			printf "${PURP}======================\n${GREEN}Expected:$NORM\n"
+			cat expected
+			printf "${PURP}======================$NORM\n"
+            FAIL=1
+
+            #Print first 3 lines of the test into the test's fail log
+            #These lines hould be some description of the test
+            printf "%s notes:\n" ${NAME} >>$TESTDIR${NAME}.fail
+            head -3 ${test} >>$TESTDIR${NAME}.fail
+            printf "======================\n" >>$TESTDIR${NAME}.fail
+
+            #Put expected and gotten output into fail log
+            printf "${RED}Output of failed test:$NORM\n" >>$TESTDIR${NAME}.fail
+			cat output >>$TESTDIR${NAME}.fail
+			printf "${PURP}======================\n${GREEN}Expected:$NORM\n" >>$TESTDIR${NAME}.fail
+			cat expected >>$TESTDIR${NAME}.fail
+			printf "${PURP}======================$NORM\n" >>$TESTDIR${NAME}.fail
+        fi
+        #Remove out file
+        rm output   2>/dev/null
+        rm expected 2>/dev/null
+
+   done
+done
+
+#Remove random files
+rm randsmall
+rm randmed
+rm randlarge
+
+#Notify user if they failed at least 1 test
+if [ $FAIL == 1 ]; then
+    printf "\n${RED}        ONE OR MORE TESTS HAVE FAILED$NORM\n"
+    printf "${RED}       check <test>.fail for more info$NORM\n\n"
+
+    printf "Showing all fail logs:\n"
+    ls ${TESTDIR}*.fail
+
+    printf "${PURP}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
+    exit 1
+fi
+
+printf "${PURP}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
+exit 0
