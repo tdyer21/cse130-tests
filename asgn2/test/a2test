@@ -18,7 +18,7 @@ ASGNNUM=2
 TESTDIR=test/
 GROUPDIR=groups/
 TESTCLASSES=( bad-request forbidden not-found ) #created args health log )
-FAILLOG=${TESTDIR}faillog
+
 
 #Direct all stderr to null, might be a bad idea
 #This was to avoid all of the terminated messages
@@ -58,8 +58,8 @@ dd if=/dev/urandom of=randlarge count=1024 bs=1024
 
 #Kill any httpservers just in case any are still active
 pkill httpserver
-#Remove any prior faillog
-rm $FAILLOG
+#Remove any prior fail logs
+rm ${TESTDIR}*.fail
 
 printf "\n${PURP}========> Running tests for asgn$ASGNNUM <========\n$NORM"
 
@@ -72,9 +72,12 @@ for class in ${TESTCLASSES[@]}; do
     #For each test in the test class
     for test in $TESTDIR$GROUPDIR$class*.test; do
 
-        name=${test%.test}
+        # remove .test
+        NOEXT=${test%.test}
+        NAME=${NOEXT##*/}
 
-        printf "${BLUE}-> Running test:$NORM ${name##*/} ... "
+        # ##*/ removes the path prefix, leaving just the test name
+        printf "${BLUE}-> Running test:$NORM ${NAME} ... "
         #Make test executable
         chmod +x $test
 
@@ -93,9 +96,18 @@ for class in ${TESTCLASSES[@]}; do
 			printf "${PURP}======================$NORM\n"
             FAIL=1
 
-            printf "%s notes:\n" ${test} >>$FAILLOG
-            head -3 ${test} >>$FAILLOG
-            printf "========\n" >>$FAILLOG
+            #Print first 3 lines of the test into the test's fail log
+            #These lines hould be some description of the test
+            printf "%s notes:\n" ${NAME} >>$TESTDIR${NAME}.fail
+            head -3 ${test} >>$TESTDIR${NAME}.fail
+            printf "======================\n" >>$TESTDIR${NAME}.fail
+
+            #Put expected and gotten output into fail log
+            printf "${RED}Output of failed test:$NORM\n" >>$TESTDIR${NAME}.fail
+			cat output >>$TESTDIR${NAME}.fail
+			printf "${PURP}======================\n${GREEN}Expected:$NORM\n" >>$TESTDIR${NAME}.fail
+			cat expected >>$TESTDIR${NAME}.fail
+			printf "${PURP}======================$NORM\n" >>$TESTDIR${NAME}.fail
         fi
         #Remove out file
         rm output   2>/dev/null
@@ -111,7 +123,12 @@ rm randlarge
 
 #Notify user if they failed at least 1 test
 if [ $FAIL == 1 ]; then
-    printf "\n${RED}        ONE OR MORE TESTS HAVE FAILED$NORM\n\n"
+    printf "\n${RED}        ONE OR MORE TESTS HAVE FAILED$NORM\n"
+    printf "${RED}       check <test>.fail for more info$NORM\n\n"
+
+    printf "Showing all fail logs:\n"
+    ls ${TESTDIR}*.fail
+
     printf "${PURP}========> End test script for asgn$ASGNNUM <=========$NORM\n\n"
     exit 1
 fi
