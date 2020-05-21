@@ -17,7 +17,7 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=2
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=( multi-thread ) #bad-request forbidden not-found put get head args health log multi-thread )
+TESTCLASSES=( bad-request forbidden not-found put get head args health log multi-thread )
 
 
 #Direct all stderr to null, might be a bad idea
