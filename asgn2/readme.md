@@ -7,3 +7,5 @@ The  simplest way to do this is to edit `.bashrc` and add the line `export PATH=
 The script also needs your makefile to support the `all` and `spotless` target, which it should anyway for the assignment.  
 
 Finally, from your asgn2 directory `cd test` and type `a2test`. You may need to do `chmod +x a2test` so that the script will be executable.
+
+The script will run and give outputs of failed tests. Failed tests also created fail logs in the test directory. It contains some notes about what the test is testing for, as well as the test output and expected output. These fail logs are deleted when the test is re run, so save them if you need them.
