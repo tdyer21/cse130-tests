@@ -8,7 +8,7 @@ These tests are shared with the permission of the teaching staff of cse 130 and 
 
 # Acknowlegdment
 
-This test is based on Aviv's test script from assignment 1. 
+The main test script is based on Aviv's test script from assignment 1. 
 
 # How to use
 
