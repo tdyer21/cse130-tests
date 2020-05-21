@@ -12,4 +12,4 @@ Go to each assignments folder and check their readme, instructions may differ.
 
 # Contributing
 
-If people contribute, we could have a very large repository of tests that could be run locally! See the contributing wiki page for how to write test scripts that are compatible with this testing script, which are written in bash.
+If people contribute, we could have a very large repository of tests that could be run locally! See the [contributing wiki page](https://github.com/zachjicha13/cse130-tests/wiki/Contributing) for how to write test scripts that are compatible with this testing script, which are written in bash.
