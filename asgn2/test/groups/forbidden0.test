@@ -13,7 +13,7 @@ touch hi
 chmod -rwx hi
 curl -si localhost:8080/hi 
 curl -si localhost:8080/hi -I 
-curl -si localhost:8080/hi -T httpserver 
+curl -si --expect100-timeout 0.1 localhost:8080/hi -T httpserver 
 rm -f hi
 
 pkill httpserver

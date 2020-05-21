@@ -1,0 +1,43 @@
+#Tests putting a file of all null bytes
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+dd if=/dev/zero of=zeros count=128 bs=59
+
+printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >createdtext
+
+FAIL=0
+
+printf "Binary PUT test pass\n" >expected
+
+
+curl -si --expect100-timeout 0.1 localhost:8080/z -T zeros >response
+
+if ! cmp -s response createdtext; then
+    printf "Response is incorrect:\n"
+    cat response
+    printf "\nExpected:\n"
+    cat expected
+    FAIL=1
+fi
+
+if ! cmp -s z zeros; then
+    printf "Binary files differ\n"
+    FAIL=1
+fi
+
+if ! $FAIL; then 
+    printf "Binary PUT test pass\n"
+fi
+
+rm zeros
+rm z
+rm createdtext
+rm response
+
+
+
+pkill httpserver

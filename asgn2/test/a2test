@@ -17,7 +17,7 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=2
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=( bad-request forbidden not-found ) #created args health log )
+TESTCLASSES=( bad-request forbidden not-found put get head args health log )
 
 
 #Direct all stderr to null, might be a bad idea
@@ -45,14 +45,12 @@ fi
 # 256 bytes -> small
 # 1 KiB -> medium
 # 1MiB -> large
-# 99MiB -> huge
 
 
 printf "\n${PURP}>Generating random files...\n$NORM"
 dd if=/dev/urandom of=randsmall count=2 bs=128
 dd if=/dev/urandom of=randmed count=2 bs=512
 dd if=/dev/urandom of=randlarge count=1024 bs=1024
-#dd if=/dev/urandom of=randhuge count=99 bs=1048576
 
 
 #Kill any httpservers just in case any are still active

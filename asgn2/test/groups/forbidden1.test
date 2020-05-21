@@ -13,7 +13,7 @@ printf "No writing allowed!\n" >nowrite
 chmod -w nowrite
 curl -si localhost:8080/nowrite 
 curl -si localhost:8080/nowrite -I 
-curl -si localhost:8080/nowrite -T httpserver 
+curl -si --expect100-timeout 0.1 localhost:8080/nowrite -T httpserver 
 rm -f nowrite
 
 pkill httpserver

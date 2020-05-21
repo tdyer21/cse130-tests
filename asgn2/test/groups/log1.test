@@ -1,11 +1,9 @@
 httpserver 8080 -l log &
 sleep 0.5
 
-printf "FAIL: GET /no-such-file HTTP/1.1 --- response 404\n========\n" >log.test.out
-printf "FAIL: GET /noperm HTTP/1.1 --- response 403\n========\n" >>log.test.out
-printf "FAIL: GET /^ HTTP/1.1 --- response 400\n========\n" >>log.test.out
-
-mv log.test.out test/groups
+printf "FAIL: GET /no-such-file HTTP/1.1 --- response 404\n========\n" >expected
+printf "FAIL: GET /noperm HTTP/1.1 --- response 403\n========\n" >>expected
+printf "FAIL: GET /^ HTTP/1.1 --- response 400\n========\n" >>expected
 
 touch noperm
 chmod -rw noperm

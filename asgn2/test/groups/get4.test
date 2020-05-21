@@ -1,0 +1,33 @@
+#Tests getting a file of all null bytes
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+dd if=/dev/zero of=zeros count=128 bs=75
+
+FILESIZE=$(stat -c%s zeros)
+
+printf "Binary GET test pass\n" >expected
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n" $FILESIZE >gettext
+cat zeros >> gettext
+
+FAIL=0
+
+
+curl -si localhost:8080/zeros >response
+
+
+if ! cmp -s response gettext; then
+    printf "Binary files differ or response header is incorrect\n"
+else 
+    printf "Binary GET test pass\n"
+fi
+
+rm zeros
+rm gettext
+rm response
+
+pkill httpserver

@@ -1,6 +1,0 @@
-FAIL: GET /no-such-file HTTP/1.1 --- response 404
-========
-FAIL: GET /noperm HTTP/1.1 --- response 403
-========
-FAIL: GET /^ HTTP/1.1 --- response 400
-========

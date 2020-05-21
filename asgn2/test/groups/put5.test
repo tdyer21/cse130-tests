@@ -1,0 +1,21 @@
+#Tests putting an empty file
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+
+printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >expected
+
+touch empty
+
+curl -si --expect100-timeout 0.1 localhost:8080/e -T empty 
+cat e
+
+
+rm e
+rm empty
+
+
+pkill httpserver

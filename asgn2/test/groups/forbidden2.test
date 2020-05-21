@@ -13,7 +13,7 @@ printf "No reading allowed!\n" >noread
 chmod -r noread
 curl -si localhost:8080/noread 
 curl -si localhost:8080/noread -I 
-curl -si localhost:8080/noread -T httpserver 
+curl -si --expect100-timeout 0.1 localhost:8080/noread -T httpserver 
 rm -f noread
 
 pkill httpserver

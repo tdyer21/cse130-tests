@@ -1,0 +1,16 @@
+#Test bad http version
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+printf "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n" >expected
+
+touch empty
+
+printf "GET /empty HTTP/1.0\r\n\r\n" | nc localhost 8080
+
+rm empty
+
+pkill httpserver

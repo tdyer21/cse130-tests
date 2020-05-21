@@ -1,0 +1,18 @@
+#Tests head on empty file
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+touch empty
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n"  >expected
+
+
+curl -si localhost:8080/empty -I
+
+
+rm empty
+
+pkill httpserver

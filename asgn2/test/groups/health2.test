@@ -1,8 +1,8 @@
 httpserver 8080 -l log &
 sleep 0.5
 
-printf "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\n3\n4HTTP/1.1 200 OK\r\nContent-Length: 4\r\n\r\n4\n10" >health.test.out
-mv health.test.out test/groups
+printf "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\n3\n4HTTP/1.1 200 OK\r\nContent-Length: 4\r\n\r\n4\n10" >expected
+
 
 touch empty
 touch noperm
@@ -11,7 +11,7 @@ chmod -rwx noperm
 #fail
 curl -si localhost:8080/healthcheck -I >/dev/null
 #fail
-curl -s localhost:8080/healthcheck -T empty
+curl -s --expect100-timeout 0.1 localhost:8080/healthcheck -T empty
 #fail
 curl -si localhost:8080/no-such-file -I >/dev/null
 curl -si localhost:8080/Makefile >/dev/null

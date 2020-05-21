@@ -1,0 +1,41 @@
+#Tests putting medium binary files
+#
+#
+
+httpserver 8080 &
+sleep 0.1
+
+printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >createdtext
+
+FAIL=0
+
+printf "Binary PUT test pass\n" >expected
+
+
+curl -si --expect100-timeout 0.1 localhost:8080/med -T randmed >response
+
+if ! cmp -s response createdtext; then
+    printf "Response is incorrect:\n"
+    cat response
+    printf "\nExpected:\n"
+    cat expected
+    FAIL=1
+fi
+
+if ! cmp -s med randmed; then
+    printf "Binary files differ\n"
+    FAIL=1
+fi
+
+if ! $FAIL; then 
+    printf "Binary PUT test pass\n"
+fi
+
+
+
+rm med
+rm response
+rm createdtext
+
+
+pkill httpserver
