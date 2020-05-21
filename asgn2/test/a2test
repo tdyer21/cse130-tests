@@ -29,18 +29,17 @@ exec 2>/dev/null
 # cd into asgn2 dir
 cd ..
 
-#make
-#make spotless
-#make
+make spotless
+make
 
 #Check if make is successful
-#if [ $? -eq 0 ]; then
-    #printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
-#else 
+if [ $? -eq 0 ]; then
+    printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
+else 
     #Exit if make fails
-    #printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
-    #exit 1
-#fi
+    printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
+    exit 1
+fi
 
 #Make random files of size 
 # 256 bytes -> small
