@@ -1,0 +1,18 @@
+#Tests that -N option changes number of worker threads
+#Tests for N + 1 threads as per clark hilbert piazza post
+#1 for dipatcher, N workers, log thread might fail
+
+
+httpserver 8080 -N 13 & 
+PID=$!
+sleep 0.25
+
+printf "Number of threads: 13\n" >expected
+
+TD=$(ps huH $! | wc -l)
+
+
+printf "Number of threads: %d\n" $(($TD - 1))
+
+
+pkill httpserver

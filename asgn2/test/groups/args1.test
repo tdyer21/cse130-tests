@@ -4,7 +4,7 @@
 
 httpserver abc 2>err
 RET=$?
-sleep 0.1
+sleep 0.25
 
 printf "Message to stderr and exit failure\n" >expected
 

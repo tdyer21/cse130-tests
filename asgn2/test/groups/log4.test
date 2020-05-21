@@ -1,0 +1,22 @@
+#Test logging of 1 GET
+#file has no newline
+#
+
+httpserver 8080 -l log &
+sleep 0.25
+
+printf "no newline" >oneline
+
+FILESIZE=$(stat -c%s oneline)
+
+printf "GET /oneline length %d\n" $FILESIZE >expected
+test/hex oneline >>expected
+
+curl localhost:8080/oneline >/dev/null
+
+pkill httpserver
+
+cat log
+
+rm log
+rm oneline

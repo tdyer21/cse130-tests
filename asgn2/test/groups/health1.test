@@ -7,7 +7,7 @@ touch empty
 
 curl -si localhost:8080/healthcheck
 curl -si localhost:8080/healthcheck -I
-curl -si --expect100-timeout 0.1 localhost:8080/healthcheck -T empty
+curl -si  localhost:8080/healthcheck -T empty
 curl -si localhost:8080/healthcheck
 
 rm empty

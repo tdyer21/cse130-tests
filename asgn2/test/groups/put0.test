@@ -3,7 +3,7 @@
 #
 
 httpserver 8080 &
-sleep 0.1
+sleep 0.25
 
 touch smalltext
 printf "This is a small textfile\n" >smalltext
@@ -11,7 +11,7 @@ printf "This is a small textfile\n" >smalltext
 printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >expected
 cat smalltext >>expected
 
-curl -si --expect100-timeout 0.1 localhost:8080/small -T smalltext
+curl -si  localhost:8080/small -T smalltext
 cat small
 
 rm smalltext

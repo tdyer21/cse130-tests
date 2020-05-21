@@ -1,0 +1,54 @@
+#Test gets with failures
+#
+#
+
+httpserver 8080 &
+sleep 0.25
+
+FAIL=0
+
+printf "All files match and bad requests errored correctly\n" >expected
+
+printf "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n" >badrequest
+printf "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n" >notfound
+
+(curl -s localhost:8080/randsmall >get1 & \
+curl -si localhost:8080/^ >bad & \
+curl -s localhost:8080/randmed >get2 & \
+curl -si localhost:8080/no-such-file >nf & \
+wait)
+
+if ! cmp -s randsmall get1; then
+    FAIL=1
+    printf "GET file differs\n"
+fi
+
+if ! cmp -s get2 randmed; then
+    FAIL=1
+    printf "GET file differs\n"
+fi
+
+if ! cmp -s bad badrequest; then
+    FAIL=1
+    printf "Bad request header incorrect\n"
+fi
+
+if ! cmp -s notfound nf; then
+    FAIL=1
+    printf "Not found header incorrect\n"
+fi
+
+if [ $FAIL -eq 0 ]; then
+    printf "All files match and bad requests errored correctly\n"
+fi
+
+
+rm nf
+rm bad
+rm get1
+rm get2
+rm badrequest
+rm notfound
+
+
+pkill httpserver

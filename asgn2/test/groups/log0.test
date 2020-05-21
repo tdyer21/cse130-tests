@@ -1,4 +1,4 @@
-#Test logging of 1 PUT
+#Test logging of 1 GET
 #
 #
 
@@ -7,14 +7,13 @@ sleep 0.25
 
 FILESIZE=$(stat -c%s randsmall)
 
-printf "PUT /s length %d\n" $FILESIZE >expected
+printf "GET /randsmall length %d\n" $FILESIZE >expected
 test/hex randsmall >>expected
 
-curl  localhost:8080/s -T randsmall >/dev/null
+curl localhost:8080/randsmall >/dev/null
 
 pkill httpserver
 
 cat log
 
 rm log
-rm s

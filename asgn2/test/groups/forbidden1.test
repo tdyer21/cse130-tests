@@ -3,7 +3,7 @@
 #
 
 httpserver 8080 &
-sleep 0.1
+sleep 0.25
 
 printf "HTTP/1.1 200 OK\r\nContent-Length: 20\r\n\r\nNo writing allowed!\n" >expected
 printf "HTTP/1.1 200 OK\r\nContent-Length: 20\r\n\r\nHTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n" >>expected
@@ -13,7 +13,7 @@ printf "No writing allowed!\n" >nowrite
 chmod -w nowrite
 curl -si localhost:8080/nowrite 
 curl -si localhost:8080/nowrite -I 
-curl -si --expect100-timeout 0.1 localhost:8080/nowrite -T httpserver 
+curl -si  localhost:8080/nowrite -T httpserver 
 rm -f nowrite
 
 pkill httpserver

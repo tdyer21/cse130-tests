@@ -1,0 +1,19 @@
+#Test logging of 1 HEAD
+#
+#
+
+httpserver 8080 -l log &
+sleep 0.25
+
+FILESIZE=$(stat -c%s randsmall)
+
+printf "HEAD /randsmall length %d\n========\n" $FILESIZE >expected
+
+
+curl localhost:8080/randsmall -I >/dev/null
+
+pkill httpserver
+
+cat log
+
+rm log

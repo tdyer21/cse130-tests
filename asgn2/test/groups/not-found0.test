@@ -1,9 +1,9 @@
-#Test on non-existant file\n
+#Test on non-existant file
 #
 #
 
 httpserver 8080 &
-sleep 0.1
+sleep 0.2
 
 printf "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n" >expected
 

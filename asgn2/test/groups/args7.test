@@ -3,19 +3,19 @@
 #
 
 httpserver -N 5 8080 & 2>>err
-sleep 0.1
+sleep 0.25
 pkill httpserver
 
 httpserver -l logname 8080 & 2>>err
-sleep 0.1
+sleep 0.25
 pkill httpserver
 
 httpserver -N 5 -l logname 8080 & 2>>err
-sleep 0.1
+sleep 0.25
 pkill httpserver
 
 httpserver -l logname -N 5 8080 & 2>>err
-sleep 0.1
+sleep 0.25
 pkill httpserver
 
 

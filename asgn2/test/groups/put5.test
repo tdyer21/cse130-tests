@@ -3,14 +3,14 @@
 #
 
 httpserver 8080 &
-sleep 0.1
+sleep 0.25
 
 
 printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >expected
 
 touch empty
 
-curl -si --expect100-timeout 0.1 localhost:8080/e -T empty 
+curl -si  localhost:8080/e -T empty 
 cat e
 
 

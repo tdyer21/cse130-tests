@@ -1,0 +1,25 @@
+#Test logging of empty files for GET and PUT
+#This is in order, not concurrent
+#
+
+httpserver 8080 -l log &
+sleep 0.25
+
+FILESIZE=$(stat -c%s randsmall)
+
+touch empty
+
+printf "GET /empty length 0\n========\n"  >expected
+printf "PUT /e length 0\n========\n"  >>expected
+
+
+curl localhost:8080/empty  >/dev/null
+curl  localhost:8080/e -T empty >/dev/null
+
+pkill httpserver
+
+cat log
+
+rm log
+rm e
+rm empty

@@ -3,7 +3,7 @@
 #
 
 httpserver 8080 &
-sleep 0.1
+sleep 0.25
 
 printf "HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n" >createdtext
 
@@ -12,7 +12,7 @@ FAIL=0
 printf "Binary PUT test pass\n" >expected
 
 
-curl -si --expect100-timeout 0.1 localhost:8080/med -T randmed >response
+curl -si  localhost:8080/med -T randmed >response
 
 if ! cmp -s response createdtext; then
     printf "Response is incorrect:\n"

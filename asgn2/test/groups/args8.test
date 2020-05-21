@@ -1,0 +1,18 @@
+#Tests that default number of worker threads works
+#Tests for 5 threads as per clark hilbert piazza post
+#1 for dipatcher, 4 workers, log thread might fail
+
+
+httpserver 8080 & 
+PID=$!
+sleep 0.25
+
+printf "Number of default threads: 4\n" >expected
+
+TD=$(ps huH $! | wc -l)
+
+
+printf "Number of default threads: %d\n" $(($TD - 1))
+
+
+pkill httpserver

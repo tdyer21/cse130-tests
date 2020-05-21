@@ -17,7 +17,7 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=2
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=( bad-request forbidden not-found put get head args health log )
+TESTCLASSES=( multi-thread ) #bad-request forbidden not-found put get head args health log multi-thread )
 
 
 #Direct all stderr to null, might be a bad idea
@@ -25,6 +25,8 @@ TESTCLASSES=( bad-request forbidden not-found put get head args health log )
 #from pkilling httpserver
 exec 2>/dev/null
 
+#make sure hex is executable
+chmod +x hex
 
 # cd into asgn2 dir
 cd ..
@@ -41,17 +43,22 @@ else
     exit 1
 fi
 
-#Make random files of size 
+#Make random files of size of approximately
 # 256 bytes -> small
 # 1 KiB -> medium
 # 1MiB -> large
 
+#Size of random files is random
+SMALL=$[ ( $RANDOM % 51 ) + 100]
+MED=$[ ( $RANDOM % 201 ) + 400]
+LARGE=$[ ( $RANDOM % 501 ) + 1000]
 
 printf "\n${PURP}>Generating random files...\n$NORM"
-dd if=/dev/urandom of=randsmall count=2 bs=128
-dd if=/dev/urandom of=randmed count=2 bs=512
-dd if=/dev/urandom of=randlarge count=1024 bs=1024
+dd if=/dev/urandom of=randsmall count=2 bs=$SMALL
+dd if=/dev/urandom of=randmed count=2 bs=$MED
+dd if=/dev/urandom of=randlarge count=1024 bs=$LARGE
 
+ls -la rand*
 
 #Kill any httpservers just in case any are still active
 pkill httpserver
@@ -126,9 +133,9 @@ if [ $FAIL == 1 ]; then
     printf "Showing all fail logs:\n"
     ls ${TESTDIR}*.fail
 
-    printf "${PURP}========> End test script for asgn$ASGNNUM <=========$NORM\n\n"
+    printf "${PURP}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
     exit 1
 fi
 
-printf "${PURP}========> End test script for asgn$ASGNNUM <=========$NORM\n\n"
+printf "${PURP}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
 exit 0

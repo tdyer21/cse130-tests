@@ -1,0 +1,42 @@
+#Test multiple gets to same file
+#
+#
+
+httpserver 8080 &
+sleep 0.25
+
+FAIL=0
+
+printf "All files match\n" >expected
+
+
+(curl -s localhost:8080/randsmall >get1 & \
+curl -s localhost:8080/randsmall >get2 & \
+curl -s localhost:8080/randsmall >get3 & \
+wait)
+
+if ! cmp -s randsmall get1; then
+    FAIL=1
+    printf "GET1 file differs\n"
+fi
+
+if ! cmp -s get2 randsmall; then
+    FAIL=1
+    printf "GET2 file differs\n"
+fi
+
+if ! cmp -s get3 randsmall; then
+    FAIL=1
+    printf "GET3 file differs\n"
+fi
+
+if [ $FAIL -eq 0 ]; then
+    printf "All files match\n"
+fi
+
+rm get1
+rm get2
+rm get3
+
+
+pkill httpserver

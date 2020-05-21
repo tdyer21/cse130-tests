@@ -1,0 +1,46 @@
+#Test multiple heads to same file
+#
+#
+
+httpserver 8080 &
+sleep 0.25
+
+FAIL=0
+
+FILESIZE=$(stat -c%s randlarge)
+
+printf "All files match\n" >expected
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n" $FILESIZE >headresult
+
+
+(curl -si localhost:8080/randlarge -I >head1 & \
+curl -si localhost:8080/randlarge -I >head2 & \
+curl -si localhost:8080/randlarge -I >head3 & \
+wait)
+
+if ! cmp -s headresult head1; then
+    FAIL=1
+    printf "HEAD1 result differs\n"
+fi
+
+if ! cmp -s headresult head2; then
+    FAIL=1
+    printf "HEAD2 result differs\n"
+fi
+
+if ! cmp -s headresult head3; then
+    FAIL=1
+    printf "HEAD3 result differs\n"
+fi
+
+if [ $FAIL -eq 0 ]; then
+    printf "All files match\n"
+fi
+
+rm head1
+rm head2
+rm head3
+rm headresult
+
+pkill httpserver

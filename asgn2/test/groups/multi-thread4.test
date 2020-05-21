@@ -1,0 +1,42 @@
+#Test multiple puts to different files
+#
+#
+
+httpserver 8080 &
+sleep 0.25
+
+FAIL=0
+
+printf "All files match\n" >expected
+
+
+(curl -s localhost:8080/r1 -T randlarge >/dev/null & \
+curl -s localhost:8080/r2 -T randmed >/dev/null & \
+curl -s localhost:8080/r3 -T randsmall >/dev/null & \
+wait)
+
+if ! cmp -s randlarge r1; then
+    FAIL=1
+    printf "PUT1 result differs\n"
+fi
+
+if ! cmp -s randmed r2; then
+    FAIL=1
+    printf "PUT2 result differs\n"
+fi
+
+if ! cmp -s randsmall r3; then
+    FAIL=1
+    printf "PUT3 result differs\n"
+fi
+
+if [ $FAIL -eq 0 ]; then
+    printf "All files match\n"
+fi
+
+rm r1
+rm r2
+rm r3
+
+
+pkill httpserver

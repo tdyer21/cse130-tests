@@ -1,0 +1,79 @@
+#Test concurrent logging 
+#multiple successes and failures
+#
+
+httpserver 8080 -l log &
+sleep 0.25
+
+FILESIZE=$(stat -c%s randsmall)
+FAIL=0
+
+printf "Log contains all entries and no null bytes\n" >expected
+
+printf "FAIL: GET /no-such-file HTTP/1.1 --- response 404\n========\n" >out1
+
+printf "GET /no-such-file length %d\n" $FILESIZE >out2
+test/hex randsmall >>out2
+
+printf "GET /no-such-file length %d\n========\n" $FILESIZE >out3
+
+printf "FAIL: GET /^ HTTP/1.1 --- response 400\n========\n" >out4
+
+(curl localhost:8080/no-such-file >/dev/null & \
+curl localhost:8080/randsmall >/dev/null & \
+curl localhost:8080/randsmall -I >/dev/null & \
+curl localhost:8080/^ >/dev/null & \
+wait)
+
+#wait for log to be written
+sleep 2
+
+if ! grep -q -f out1 log; then
+    printf "Log does not contain:\n"
+    cat out1
+    printf "\n"
+    FAIL=1
+fi
+
+if ! grep -q -f out2 log; then
+    printf "Log does not contain:\n"
+    cat out2
+    printf "\n"
+    FAIL=1
+fi
+
+if ! grep -q -f out3 log; then
+    printf "Log does not contain:\n"
+    cat out3
+    printf "\n"
+    FAIL=1
+fi
+
+if ! grep -q -f out4 log; then
+    printf "Log does not contain:\n"
+    cat out4
+    printf "\n"
+    FAIL=1
+fi
+
+#replace all nulls with @ signs so we can find them
+sed 's/\x00/@/g' log >modlog
+
+if grep -q '@' modlog; then
+    printf "Log contians null bytes!\n"
+    FAIL=1
+fi
+
+if [ $FAIL -eq 0 ]; then
+    printf "Log contains all entries and no null bytes\n"
+fi
+
+
+
+pkill httpserver
+rm log
+rm modlog
+rm out1
+rm out2
+rm out3
+rm out4
