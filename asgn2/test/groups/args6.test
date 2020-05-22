@@ -2,11 +2,11 @@
 #
 #
 
-httpserver -N 5 8080 -l logname & 2>>err
+httpserver -N 5 8080 -l logname 2>>err &
 sleep 0.25
 pkill httpserver
 
-httpserver -l logname 8080 -N 5 & 2>>err
+httpserver -l logname 8080 -N 5 2>>err &
 sleep 0.25
 pkill httpserver
 

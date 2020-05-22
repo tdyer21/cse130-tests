@@ -1,6 +1,6 @@
 #Tests if program checks that port is numeric
-#
-#
+#This test assumes your program will exit
+#This test will hang if your program does not exit!
 
 httpserver abc 2>err
 RET=$?

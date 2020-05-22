@@ -1,6 +1,6 @@
 #Tests if program checks for port argument and returns EXIT_FAILURE
-#
-#
+#This test assumes your program will exit
+#This test will hang if your program does not exit!
 
 httpserver 2>err
 RET=$?

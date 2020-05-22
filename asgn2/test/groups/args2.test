@@ -1,6 +1,6 @@
 #Tests if server checks for threadnum argument when -N is specified
-#
-#
+#This test assumes your program will exit
+#This test will hang if your program does not exit!
 
 httpserver 8080 -N 2>err
 RET=$?

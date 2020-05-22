@@ -1,6 +1,6 @@
 #Tests if server checks for logname argument when -l is specified
-#
-#
+#This test assumes your program will exit
+#This test will hang if your program does not exit!
 
 httpserver 8080 -l 2>err
 RET=$?

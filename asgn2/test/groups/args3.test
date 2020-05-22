@@ -1,6 +1,6 @@
 #Tests if server checks for numeric numthreads argument
-#
-#
+#This test assumes your program will exit
+#This test will hang if your program does not exit!
 
 httpserver 8080 -N abc 2>err
 RET=$?
