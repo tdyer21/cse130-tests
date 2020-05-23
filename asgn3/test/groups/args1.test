@@ -1,0 +1,35 @@
+#Tests if program checks for presence of only 1 port
+#must exit, return EXIT_FAILURE, and print to stderr
+#
+
+printf "Program exits, returns EXIT_FAILURE, and prints to stderr\n" >expected
+
+loadbalancer 8080 &>/dev/null &
+sleep 0.25
+
+FAIL=0
+
+#Check if program exits
+if pgrep loadbalancer &>/dev/null; then 
+    printf "Program does not exit\n"
+else
+    loadbalancer 8080 2>err 
+    if [ $? -eq 0 ]; then
+        printf "Program returns EXIT_SUCCESS\n"
+        FAIL=1
+    fi
+
+    ERRSIZE=$(stat -c%s err)
+
+    if [ $ERRSIZE -eq 0 ]; then
+        printf "Program does not print to stderr\n"
+    fi
+
+    if [ -s err ] && [ $FAIL -eq 0 ]; then
+        printf "Program exits, returns EXIT_FAILURE, and prints to stderr\n"
+    fi
+
+    rm err
+fi
+
+pkill loadbalancer

@@ -17,16 +17,26 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=3
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=(  )
+TESTCLASSES=( args )
+TESTSTORUN=()
+
+if [ $# -eq 0 ]; then 
+    TESTSTORUN=$TESTCLASSES
+else
+    for var in $@; do
+        for class in TESTCLASSES; do
+            if [[ "$var" == "$class" ]]; then
+                TESTCLASSES+=( "$var" )
+            fi
+        done
+    done
+fi
 
 
 #Direct all stderr to null, might be a bad idea
 #This was to avoid all of the terminated messages
 #from pkilling httpserver
 exec 2>/dev/null
-
-#make sure hex is executable
-chmod +x hex
 
 # cd into asgn2 dir
 cd ..
@@ -69,7 +79,6 @@ printf "\n${PURP}========> Running tests for asgn$ASGNNUM <========\n$NORM"
 
 #This keeps track of if the program fails at least 1 test
 FAIL=0
-
 
 #For each test class
 for class in ${TESTCLASSES[@]}; do
