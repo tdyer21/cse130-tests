@@ -24,14 +24,13 @@ if [ $# -eq 0 ]; then
     TESTSTORUN=$TESTCLASSES
 else
     for var in $@; do
-        for class in TESTCLASSES; do
+        for class in ${TESTCLASSES[@]}; do
             if [[ "$var" == "$class" ]]; then
-                TESTCLASSES+=( "$var" )
+                TESTSTORUN+=( "$var" )
             fi
         done
     done
 fi
-
 
 #Direct all stderr to null, might be a bad idea
 #This was to avoid all of the terminated messages
@@ -75,13 +74,17 @@ pkill httpserver
 #Remove any prior fail logs
 rm ${TESTDIR}*.fail
 
+#Copy any needed binaries and scripts into asgn3 dir
+cp test/dep/* .
+chmod +x *.dep
+
 printf "\n${PURP}========> Running tests for asgn$ASGNNUM <========\n$NORM"
 
 #This keeps track of if the program fails at least 1 test
 FAIL=0
 
 #For each test class
-for class in ${TESTCLASSES[@]}; do
+for class in ${TESTSTORUN[@]}; do
     #For each test in the test class
     for test in $TESTDIR$GROUPDIR$class*.test; do
 
@@ -133,6 +136,10 @@ done
 rm randsmall
 rm randmed
 rm randlarge
+
+
+#Delete any copied binaries and scripts back into test folder
+rm *.dep
 
 #Notify user if they failed at least 1 test
 if [ $FAIL == 1 ]; then
