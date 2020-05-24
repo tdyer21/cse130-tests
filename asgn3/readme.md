@@ -8,7 +8,7 @@ The  simplest way to do this is to edit `.bashrc` and add the line `export PATH=
 
 The script also needs your makefile to support the `all` and `spotless` target, which it should anyway for the assignment.  
 
-Finally, from your asgn2 directory `cd test` and type `a3test`. You may need to do `chmod +x a3test` so that the script will be executable. Do not run `loadbalancer` on your own, the script will handle that for you.
+Finally, from your asgn2 directory `cd test` and type `a3test`. You may need to do `chmod +x a3test` so that the script will be executable. Do not run `loadbalancer` on your own, the script will handle that for you. The tests also use the given `httpserver` binary, so there is no need to supply your own.
 
 With no arguments, the script will run all test cases. Users may also specify which tests to run in the command line arguments. `a3test args get put` will only run the `args`, `get`, and `put` test classes. Non-existent test classes are ignored.
 
