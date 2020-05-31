@@ -1,0 +1,33 @@
+#Tests if a server correctly chooses a server with less errors
+#Out put of 404 does not mean that your loadbalancer is wrong
+#it means that the wrong server was chosen, wrong server is in a different dir
+
+cd test
+../httpserver.dep 8080 -L -e 50 &
+
+cd ..
+httpserver.dep 8081 -L &
+sleep 0.25
+
+loadbalancer 8888 8080 8081 -R 2 &
+
+printf "Hello, World\n" >file
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World\n" >expected
+
+#Wait for initial health check to happen
+sleep 1
+
+curl -si localhost:8888/file >out
+cat out
+
+#Print out disclaimer on failure so users don't fix a bug that might not exist
+if ! grep -q '200' out; then
+    printf "Tests if a server correctly chooses a server with less total requests\nOutput of 404 does not mean that your loadbalancer is wrong\nit means that the wrong server was chosen, wrong server is in a different dir\n"
+fi
+
+rm file
+rm out
+
+pkill httpserver.dep
+pkill loadbalancer

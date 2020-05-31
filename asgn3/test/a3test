@@ -17,7 +17,7 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=3
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=( args get put head multi-thread server-down )
+TESTCLASSES=( args get put head multi-thread server-down load )
 TESTSTORUN=()
 
 if [ $# -eq 0 ]; then 

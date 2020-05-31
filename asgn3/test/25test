@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#Runs the tests 25 times to check for heisenbugs
+#edit if you like to include the tests you want to run
+#don't recommend all tests, it will take forever
+
+for i in {1..25}; do
+	printf "========\n"
+	printf "Test iteration #%d\n" $i
+	printf "========\n\n"
+	a3test load server-down
+done

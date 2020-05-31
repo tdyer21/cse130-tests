@@ -4,6 +4,7 @@
 
 httpserver.dep 8080 -L &
 httpserver.dep 8081 -L &
+sleep 0.25
 
 loadbalancer 8888 8080 8081 &
 
