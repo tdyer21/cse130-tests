@@ -17,11 +17,11 @@ PURP="$(printf '\033[0;1;35m')"
 ASGNNUM=3
 TESTDIR=test/
 GROUPDIR=groups/
-TESTCLASSES=( args )
+TESTCLASSES=( args get put head multi-thread server-down )
 TESTSTORUN=()
 
 if [ $# -eq 0 ]; then 
-    TESTSTORUN=$TESTCLASSES
+    TESTSTORUN=${TESTCLASSES[@]}
 else
     for var in $@; do
         for class in ${TESTCLASSES[@]}; do
@@ -70,7 +70,8 @@ dd if=/dev/urandom of=randlarge count=1024 bs=$LARGE
 ls -la rand*
 
 #Kill any httpservers just in case any are still active
-pkill httpserver
+pkill httpserver.dep
+pkill loadbalancer
 #Remove any prior fail logs
 rm ${TESTDIR}*.fail
 

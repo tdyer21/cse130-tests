@@ -1,0 +1,19 @@
+#Tests if load balancer can detect all servers being down 
+#Servers start operational
+#
+
+httpserver.dep 8080 -L &
+httpserver.dep 8081 -L &
+
+loadbalancer 8888 8080 8081 &
+
+printf "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n" >expected
+
+#Wait for initial health check to happen
+sleep 1
+
+pkill httpserver.dep
+
+curl -si localhost:8888/Makefile
+
+pkill loadbalancer

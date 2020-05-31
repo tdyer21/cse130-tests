@@ -1,0 +1,11 @@
+#Tests if load balancer can detect all servers being down from the start
+#
+#
+
+printf "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n" >expected
+
+loadbalancer 8888 8080 8081 &
+
+curl -si localhost:8888/Makefile
+
+pkill loadbalancer

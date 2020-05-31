@@ -1,0 +1,16 @@
+#Tests head on large file
+#
+#
+
+httpserver.dep 8080 &
+sleep 0.25
+
+FILESIZE=$(stat -c%s randlarge)
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n" $FILESIZE >expected
+
+
+curl -si localhost:8080/randlarge -I
+
+
+pkill httpserver.dep

@@ -1,0 +1,30 @@
+#Tests getting medium binary files
+#
+#
+
+httpserver.dep 8080 &
+sleep 0.25
+
+FILESIZE=$(stat -c%s randmed)
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n" $FILESIZE >gettext
+cat randmed >> gettext
+
+
+printf "Binary GET test pass\n" >expected
+
+
+curl -si localhost:8080/randmed >response
+
+if ! cmp -s response gettext; then
+    printf "Binary files differ or response header is incorrect\n"
+else 
+    printf "Binary GET test pass\n"
+fi
+
+
+rm gettext
+rm response
+
+
+pkill httpserver.dep

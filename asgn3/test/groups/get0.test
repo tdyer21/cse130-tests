@@ -1,0 +1,19 @@
+#Tests get on small text file
+#
+#
+
+httpserver.dep 8080 &
+sleep 0.25
+
+touch smalltext
+printf "This is a small textfile\n" >smalltext
+
+printf "HTTP/1.1 200 OK\r\nContent-Length: 25\r\n\r\n" >expected
+cat smalltext >>expected
+
+curl -si localhost:8080/smalltext
+
+rm smalltext
+rm small
+
+pkill httpserver.dep
