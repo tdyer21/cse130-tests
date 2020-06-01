@@ -8,5 +8,5 @@ for i in {1..25}; do
 	printf "========\n"
 	printf "Test iteration #%d\n" $i
 	printf "========\n\n"
-	a3test load server-down
+	a3test server-down
 done

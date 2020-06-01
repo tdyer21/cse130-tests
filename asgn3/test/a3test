@@ -7,14 +7,16 @@
 
 #Define colors for printing to console
 #looks like some sort of paint factory explosion...
-NORM="$(printf '\033[0m')"
-RED="$(printf '\033[0;1;31m')"
-GREEN="$(printf '\033[0;1;32m')"
-BLUE="$(printf '\033[0;1;34m')"
-PURP="$(printf '\033[0;1;35m')"
+NORM="$(printf '\e[0m')"
+RED="$(printf '\e[0;1;31m')"
+GREEN="$(printf '\e[0;1;32m')"
+BLUE="$(printf '\e[0;1;34m')"
+PURP="$(printf '\e[0;1;35m')"
+YELLOW="$(printf '\e[0;1;93m')"
 
 #Constants for folders and such
 ASGNNUM=3
+ASGNAME="loadbalancer"
 TESTDIR=test/
 GROUPDIR=groups/
 TESTCLASSES=( args get put head multi-thread server-down load )
@@ -34,21 +36,23 @@ fi
 
 #Direct all stderr to null, might be a bad idea
 #This was to avoid all of the terminated messages
-#from pkilling httpserver
+#from pkilling 
 exec 2>/dev/null
 
 # cd into asgn2 dir
 cd ..
+
+printf "${PURP}=========> Building ${ASGNAME} <=========$NORM\n"
 
 make spotless
 make
 
 #Check if make is successful
 if [ $? -eq 0 ]; then
-    printf "${PURP}========${GREEN}Make did not complain${PURP}========$NORM\n"
+    printf "${GREEN}=========> Make did not complain <=========$NORM\n"
 else 
     #Exit if make fails
-    printf "${RED}MAKEFILE FAILED TO BUILD HTTPSERVER!$NORM\n"
+    printf "${RED}===> Make failed to build ${ASGNAME} <===$NORM\n"
     exit 1
 fi
 
@@ -62,7 +66,7 @@ SMALL=$[ ( $RANDOM % 51 ) + 100]
 MED=$[ ( $RANDOM % 201 ) + 400]
 LARGE=$[ ( $RANDOM % 501 ) + 1000]
 
-printf "\n${PURP}>Generating random files...\n$NORM"
+printf "\n${PURP}========> Generating random files <========\n$NORM"
 dd if=/dev/urandom of=randsmall count=2 bs=$SMALL
 dd if=/dev/urandom of=randmed count=2 bs=$MED
 dd if=/dev/urandom of=randlarge count=1024 bs=$LARGE
@@ -86,6 +90,12 @@ FAIL=0
 
 #For each test class
 for class in ${TESTSTORUN[@]}; do
+
+    if [[ "$class" == "server-down" ]]; then
+        printf "${YELLOW}>These tests may take a long time\n>Please allow up to 15 seconds for each test\n$NORM"
+    fi
+
+
     #For each test in the test class
     for test in $TESTDIR$GROUPDIR$class*.test; do
 
@@ -147,12 +157,12 @@ if [ $FAIL == 1 ]; then
     printf "\n${RED}        ONE OR MORE TESTS HAVE FAILED$NORM\n"
     printf "${RED}       check <test>.fail for more info$NORM\n\n"
 
-    printf "Showing all fail logs:\n"
+    printf "${RED}Showing all fail logs:\n"
     ls ${TESTDIR}*.fail
 
-    printf "${PURP}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
+    printf "=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
     exit 1
 fi
 
-printf "${PURP}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
+printf "${GREEN}=======> End test script for asgn$ASGNNUM <=======$NORM\n\n"
 exit 0

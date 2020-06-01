@@ -1,0 +1,37 @@
+#Tests if load balancer can detect all servers being non responive
+#
+#
+
+httpserver.dep 8080 -L &
+httpserver.dep 8081 -L &
+sleep 0.25
+
+printf "Hello, World\n" >file
+
+loadbalancer 8888 8080 8081 -R 1 &
+
+printf "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n" >expected
+
+#Wait for initial health check to happen
+sleep 1
+
+pkill httpserver.dep
+
+#set up nc to listen on the server ports 
+#this will look like servers that you can connect to, but don't respond
+
+nc localhost 8080 -l >/dev/null &
+nc localhost 8081 -l >/dev/null &
+sleep 0.25
+
+#cause a healthcheck
+curl -si localhost:8888/file >/dev/null
+
+sleep 10
+
+curl -si localhost:8888/file
+
+rm file
+
+pkill httpserver.dep
+pkill loadbalancer
