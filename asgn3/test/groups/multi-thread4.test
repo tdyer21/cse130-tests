@@ -2,7 +2,7 @@
 #
 #
 
-httpserver.dep 8080 &
+./httpserver.dep 8080 &
 sleep 0.25
 
 FAIL=0

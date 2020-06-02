@@ -4,7 +4,7 @@
 
 printf "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n" >expected
 
-loadbalancer 8888 8080 8081 &
+./loadbalancer 8888 8080 8081 &
 #Wait for initial health check
 sleep 1
 

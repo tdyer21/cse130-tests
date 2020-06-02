@@ -4,7 +4,7 @@
 
 printf "Program exits, returns EXIT_FAILURE, and prints to stderr\n" >expected
 
-loadbalancer 8080 8081 -R &>/dev/null &
+./loadbalancer 8080 8081 -R &>/dev/null &
 sleep 0.25
 
 FAIL=0
@@ -13,7 +13,7 @@ FAIL=0
 if pgrep loadbalancer &>/dev/null; then 
     printf "Program does not exit\n"
 else
-    loadbalancer 8080 8081 -R 2>err 
+    ./loadbalancer 8080 8081 -R 2>err 
     if [ $? -eq 0 ]; then
         printf "Program returns EXIT_SUCCESS\n"
         FAIL=1

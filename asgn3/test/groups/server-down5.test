@@ -2,11 +2,11 @@
 #Servers start operational
 #Similar to server-down1, but waits for 2nd health check before sending request
 
-httpserver.dep 8080 -L &
-httpserver.dep 8081 -L &
+./httpserver.dep 8080 -L &
+./httpserver.dep 8081 -L &
 sleep 0.25
 
-loadbalancer 8888 8080 8081 -R 1 &
+./loadbalancer 8888 8080 8081 -R 1 &
 
 printf "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n" >expected
 
