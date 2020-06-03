@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+#Slightly modified version of script made by Aviv Brook
+
 import sys
 import binascii
 
