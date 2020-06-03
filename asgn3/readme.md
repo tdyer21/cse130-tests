@@ -4,7 +4,7 @@ Be sure to check back often, tests may be added or fixed over time.
 
 Download the test folder and put it into your asgn3 directory. You can add "test/" to .gitignore and the test folder will not be tracked by git. You no longer need to add `./` to your path for this script to work.
 
-The script needs your makefile to support the `all` and `spotless` target, which it should anyway for the assignment.  
+The script needs your makefile to support the `all` and `spotless` target.  
 
 Finally, from your asgn2 directory `cd test` and type `a3test`. You may need to do `chmod +x a3test` so that the script will be executable. Do not run `loadbalancer` on your own, the script will handle that for you. The tests also uses the given `httpserver` binary, so there is no need to supply your own.
 
