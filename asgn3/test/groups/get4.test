@@ -2,8 +2,11 @@
 #
 #
 
-./httpserver.dep 8080 &
+./httpserver.dep 8888 -L &
 sleep 0.25
+
+./loadbalancer 8080 8888 &
+sleep 1
 
 dd if=/dev/zero of=zeros count=128 bs=75
 
@@ -31,3 +34,4 @@ rm gettext
 rm response
 
 pkill httpserver.dep
+pkill loadbalancer

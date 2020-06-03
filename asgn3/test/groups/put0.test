@@ -2,8 +2,11 @@
 #
 #
 
-./httpserver.dep 8080 &
+./httpserver.dep 8888 -L &
 sleep 0.25
+
+./loadbalancer 8080 8888 &
+sleep 1
 
 touch smalltext
 printf "This is a small textfile\n" >smalltext
@@ -18,3 +21,4 @@ rm smalltext
 rm small
 
 pkill httpserver.dep
+pkill loadbalancer

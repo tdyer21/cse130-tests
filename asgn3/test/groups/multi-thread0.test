@@ -2,8 +2,11 @@
 #
 #
 
-./httpserver.dep 8080 &
+./httpserver.dep 8888 -L &
 sleep 0.25
+
+./loadbalancer 8080 8888 &
+sleep 1
 
 FAIL=0
 
@@ -44,3 +47,4 @@ rm head
 rm headresult
 
 pkill httpserver.dep
+pkill loadbalancer
