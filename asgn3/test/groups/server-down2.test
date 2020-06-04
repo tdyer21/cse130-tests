@@ -11,7 +11,7 @@ printf "Hello, World\n" >file
 
 ./loadbalancer 8888 8080 8081 &
 
-printf "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\nHTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World\n" >expected
+printf "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World\n" >expected
 
 #Wait for initial health check to happen
 sleep 1
@@ -19,7 +19,10 @@ sleep 1
 kill $KILLPID
 sleep 0.25
 
-curl -si localhost:8888/file
+#cause health check
+curl -si localhost:8888/file >/dev/null
+sleep 10
+
 curl -si localhost:8888/file
 
 rm file
